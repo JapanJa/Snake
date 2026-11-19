@@ -69,28 +69,42 @@ def gameLoop():
                     if event.key == pygame.K_c:
                         gameLoop()
 
+        # Direction the snake actually moved in last frame
+        prev_x_change = x1_change
+        prev_y_change = y1_change
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
+                # Ignore a key if it is the opposite of the current direction
+                if event.key == pygame.K_LEFT and prev_x_change != snake_block:
                     x1_change = -snake_block
                     y1_change = 0
-                elif event.key == pygame.K_RIGHT:
+                elif event.key == pygame.K_RIGHT and prev_x_change != -snake_block:
                     x1_change = snake_block
                     y1_change = 0
-                elif event.key == pygame.K_UP:
+                elif event.key == pygame.K_UP and prev_y_change != snake_block:
                     y1_change = -snake_block
                     x1_change = 0
-                elif event.key == pygame.K_DOWN:
+                elif event.key == pygame.K_DOWN and prev_y_change != -snake_block:
                     y1_change = snake_block
                     x1_change = 0
 
-        if x1 >= width or x1 < 0 or y1 >= height or y1 < 0:
-            game_close = True
-
         x1 += x1_change
         y1 += y1_change
+
+        # Wrap around the screen edges
+        if x1 >= width:
+            x1 = 0
+        elif x1 < 0:
+            x1 = width - snake_block
+
+        if y1 >= height:
+            y1 = 0
+        elif y1 < 0:
+            y1 = height - snake_block
+
         display.fill(blue)
         pygame.draw.rect(display, green, [foodx, foody, snake_block, snake_block])
         snake_Head = []
